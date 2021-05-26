@@ -2,7 +2,7 @@
 
 class Matrice():
 
-    def __init__(self, li : list[int]):
+    def __init__(self, li : list):
 
         if sum([len(i) for i in li])/len(li) != len(li[0]):
             raise ValueError('This list not have the same lenth for each row.')
