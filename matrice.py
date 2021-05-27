@@ -12,14 +12,14 @@ class Matrice():
         self.p = len(li[0])
 
     def coef(self, coef : int):
-        self.mat = [[j*coef for j in i] for i in self.mat]
+        return Matrice([[j*coef for j in i] for i in self.mat])
 
     def add(self, smat):
         if not isinstance(smat, Matrice):
             raise ValueError('This method need a Matrice instance as parameter')
 
         if self.n == smat.n and self.p == smat.p:
-            self.mat = [[self.mat[i][j]+smat.get_list()[i][j] for j in range(self.p)] for i in range(self.n)]
+            return Matrice([[self.mat[i][j]+smat.get_list()[i][j] for j in range(smat.p)] for i in range(self.n)])
         else:
             raise ValueError('This two matrices does not have the same order')
 
@@ -32,9 +32,12 @@ class Matrice():
             raise ValueError('This method need a Matrice instance as parameter')
 
         if self.p == smat.n:
-          for i in range(self.n):
-            for j in range(smat.p):
-              
+            return Matrice([[self.single_mul(self.get_row(i), smat.get_column(j)) for j in range(smat.p)] for i in range(self.n)])
+        else:
+            raise ValueError("This Matrices can't be multiplied")
+
+    def single_mul(self, mata, matb):
+        return sum([mata[i]*matb[i] for i in range(len(mata))])
 
     def get_width(self):
         return self.n
@@ -48,19 +51,33 @@ class Matrice():
     def get_list(self):
         return self.mat
 
+    def get_row(self, index):
+        return self.mat[index]
+
+    def get_column(self, index):
+        return [i[index] for i in self.mat]
+
     def print_mat(self):
         for i in self.mat:
             print(i)
 
 MatA = Matrice([
-    [2,2,1], 
-    [3,1,0]
+    [-1, 2, 1], 
+    [ 3, 0, 2],
+    [ 1, 0, 1]
 ])
 
 MatB = Matrice([
-    [1,1,2], 
-    [0,2,3]
+    [ 1, 2, 3],
+    [ 2,-1, 0],
+    [ 6, 1, 0]
 ])
 
-MatA.sub(MatB)
-MatA.print_mat()
+MatC = Matrice([
+    [ 3,-2,-1],
+    [-5, 1, 2],
+    [ 2, 0,-3]
+])
+
+MatD = MatA.add(MatB).mul(MatC)
+MatD.print_mat()
