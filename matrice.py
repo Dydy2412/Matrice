@@ -31,8 +31,10 @@ class Matrice():
         if not isinstance(smat, Matrice):
             raise ValueError('This method need a Matrice instance as parameter')
 
-        # if self.p == smat.n:
-        #     self.mat = [[sum([self.mat[i][j]*smat[j][i] for i in range(k+self.n) for j in range(l+self.n)])]]
+        if self.p == smat.n:
+          for i in range(self.n):
+            for j in range(smat.p):
+              
 
     def get_width(self):
         return self.n
