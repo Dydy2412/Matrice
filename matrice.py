@@ -13,19 +13,22 @@ class Matrice():
         self.n = len(li)
         self.p = len(li[0])
 
+    def __iter__(self):
+        return self.mat
+
     def coef(self, coef : int) -> Matrice_inst:
         '''Apply coefficient to a matrice'''
 
         return Matrice([[j*coef for j in i] for i in self.mat])
 
-    def add(self, smat : Matrice_inst) -> Matrice_inst:
+    def __add__(self, smat : Matrice_inst) -> Matrice_inst:
         '''Add two matrices (same order)'''
 
         if not isinstance(smat, Matrice):
             raise ValueError('This method need a Matrice instance as parameter')
 
         if self.n == smat.n and self.p == smat.p:
-            return Matrice([[self.mat[i][j]+smat.get_list()[i][j] for j in range(smat.p)] for i in range(self.n)])
+            return Matrice([[self.mat[i][j]+smat[i][j] for j in range(smat.p)] for i in range(self.n)])
         else:
             raise ValueError('This two matrices does not have the same order')
 
@@ -63,10 +66,6 @@ class Matrice():
         '''Return the order of the matrice'''
         return (self.n, self.p)
 
-    def get_list(self) -> list:
-        '''Return the list format of the matrice'''
-        return self.mat
-
     def get_row(self, index : int) -> list:
         '''Return a row of the matrice'''
         return self.mat[index]
@@ -97,5 +96,5 @@ MatC = Matrice([
     [ 2, 0,-3]
 ])
 
-MatD = MatA.mul(MatB)
-MatD.print_mat()
+MatD = MatB + MatC
+print(MatD)
