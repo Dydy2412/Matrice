@@ -1,6 +1,34 @@
 ## Dydy2412 ##
 Matrice_ = object
 
+def det(mat : Matrice_) -> int:
+    '''Return the determinant of the matrice'''
+    order = mat.get_width()
+
+    if not mat.is_squared():
+        raise ValueError('Matrice not squared')
+
+    if mat.get_width() == 1:
+        return mat()[0]
+
+    elif mat.get_width() == 2:
+        return mat()[0][0]*mat()[1][1] - mat()[0][1]*mat()[1][0]
+
+    elif mat.get_width() == 3:
+        diago_down = [[mat()[order-1-j][(j+i)%3] for j in range(3)] for i in range(3)]
+        diago_up = [[mat()[j][(j+i)%3] for j in range(3)] for i in range(3)]
+        return sum([mul_list(i) for i in diago_down]) - sum([mul_list(i) for i in diago_up])
+
+    else:
+        raise ValueError('Matrice too big')
+
+def mul_list(li : list) -> int:
+    '''Return the product of all the values in a list'''
+    out = 1
+    for i in li:
+        out *= i
+    return out
+
 class Matrice():
     '''Matrice class for matrice operation'''
 

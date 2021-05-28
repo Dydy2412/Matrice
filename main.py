@@ -1,8 +1,8 @@
-from mat_lib import Matrice
+from mat_lib import Matrice, det
 
 MatA = Matrice([
-    [-133, 2, 1], 
-    [ 3, 0, 2]
+    [-133, 2], 
+    [   3, 2]
 ])
 
 MatB = Matrice([
@@ -17,6 +17,5 @@ MatC = Matrice([
     [ 2, 0,-3]
 ])
 
-MatD = MatA**2
-print(MatB)
+MatD = det(MatB)
 print(MatD)
