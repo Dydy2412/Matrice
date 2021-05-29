@@ -1,5 +1,6 @@
 ## Dydy2412 ##
 from fractions import Fraction
+from math import prod
 
 Matrice_ = object
 
@@ -19,22 +20,15 @@ def det(mat : Matrice_) -> int:
     elif mat.get_width() == 3:
         diago_down = [[mat()[order-1-j][(j+i)%3] for j in range(3)] for i in range(3)]
         diago_up = [[mat()[j][(j+i)%3] for j in range(3)] for i in range(3)]
-        return  sum([mul_list(i) for i in diago_up]) - sum([mul_list(i) for i in diago_down])
+        return  sum([prod(i) for i in diago_up]) - sum([prod(i) for i in diago_down])
 
     else:
         raise ValueError('Matrice too big')
 
-def mul_list(li : list) -> int:
-    '''Return the product of all the values in a list'''
-    out = 1
-    for i in li:
-        out *= i
-    return out
-
 class Matrice():
     '''Matrice class for matrice operation'''
 
-    def __init__(self, li : list):
+    def __init__(self, li : list) -> None:
 
         if sum([len(i) for i in li])/len(li) != len(li[0]):
             raise ValueError('This list not have the same lenth for each row.')
@@ -43,7 +37,7 @@ class Matrice():
         self.n = len(li)
         self.p = len(li[0])
 
-    def __str__(self):
+    def __str__(self) -> str:
         temp_li = [[str(j) for j in i] for i in self.mat]
         max_lenth = max([len(j) for i in temp_li for j in i])+1
         output = [['' for j in range(self.p+2)] for j in range(self.n)]
@@ -60,10 +54,10 @@ class Matrice():
 
         return ''.join(str_out)
 
-    def __call__(self):
+    def __call__(self) -> list:
         return self.mat
 
-    def __neg__(self):
+    def __neg__(self) -> Matrice_:
         return self*(-1)
 
     def __add__(self, smat : Matrice_) -> Matrice_:
@@ -85,21 +79,41 @@ class Matrice():
     def __mul__(self, val : float or Matrice_) -> Matrice_:
         '''Muliply matrices with coefficient or other matrices'''
         if isinstance(val,Matrice):
-            return self.mul(val)
+            return self.__mul(val)
         elif type(val) == float or int:
-            return self.coef(val)
+            return self.__coef(val)
         else:
             raise TypeError('Wrong Parameter')
 
-    def __pow__(self, val):
+    def __pow__(self, val : int) -> Matrice_:
         '''Matrices power and inverse (squared)'''
         if val == -1:
             d = det(self)
             if d != 0 and self.is_squared():
-                if self.n == 1:
+                if self.n == 1: #1x1
                     return Matrice([1/self()[0]])
-                elif self.n == 2:
+
+                elif self.n == 2: #2x2 
                     return Matrice([[self()[1-i][1-j] if i==j else -self()[i][j] for j in range(2)] for i in range(2)])*(1/d)
+
+                elif self.n == 3: #3x3
+                    output = Matrice([[0 for j in range(3)] for i in range(3)])
+                    
+                    for i in range(3):
+                        for j in range(3):
+                            temp = [[self()[k][l] for l in range(3) if k!=i and l!=j] for k in range(3)]
+                            temp.remove([])
+                            mat_det = det(Matrice(temp))
+                            if (i+j+2)%2 == 0:                               
+                                if i==j: 
+                                    output()[i][j] = mat_det
+                                else: 
+                                    output()[j][i] = mat_det
+                            else:
+                                output()[j][i] = -mat_det
+                    
+                    return output*(1/d)
+
                 else:
                     raise ValueError('Matrice too big')
             else:
@@ -114,7 +128,7 @@ class Matrice():
         else:
             raise ValueError('Negative power > -1 not allowed')
 
-    def __truediv__(self, val):
+    def __truediv__(self, val : int or Matrice_) -> Matrice_:
         if isinstance(val, Matrice):
             return self*val**(-1)
         elif type(val) == int or float:
@@ -122,20 +136,20 @@ class Matrice():
         else:
             raise TypeError('Wrong Parameter')
 
-    def coef(self, coef : int) -> Matrice_:
+    def __coef(self, coef : int) -> Matrice_:
         '''Apply coefficient to a matrice'''
 
         return Matrice([[Fraction(j*coef).limit_denominator() for j in i] for i in self.mat])
 
-    def mul(self, smat : Matrice_) -> Matrice_:
+    def __mul(self, smat : Matrice_) -> Matrice_:
         '''Muliply tow matrices (same row/column)'''
 
         if self.p == smat.n:
-            return Matrice([[self.single_mul(self.get_row(i), smat.get_column(j)) for j in range(smat.p)] for i in range(self.n)])
+            return Matrice([[self.__single_mul(self.get_row(i), smat.get_column(j)) for j in range(smat.p)] for i in range(self.n)])
         else:
             raise ValueError("This Matrices can't be multiplied")
 
-    def single_mul(self, mata : list, matb : list) -> list:
+    def __single_mul(self, mata : list, matb : list) -> list:
         '''Add product of each index of the two list'''
 
         return sum([Fraction(mata[i]*matb[i]).limit_denominator() for i in range(len(mata))])

@@ -11,10 +11,10 @@ MatB = Matrice([
 ])
 
 MatC = Matrice([
-    [ 3,-2,-1],
-    [-5, 1, 2],
-    [ 2, 0,-3]
+    [ 3, 8,-1],
+    [ 5, 1, 4],
+    [ 2, 3,-3]
 ])
 
-MatD = MatA/3
+MatD = MatC**(-1)
 print(MatD)
