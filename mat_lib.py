@@ -1,4 +1,6 @@
 ## Dydy2412 ##
+from fractions import Fraction
+
 Matrice_ = object
 
 def det(mat : Matrice_) -> int:
@@ -17,7 +19,7 @@ def det(mat : Matrice_) -> int:
     elif mat.get_width() == 3:
         diago_down = [[mat()[order-1-j][(j+i)%3] for j in range(3)] for i in range(3)]
         diago_up = [[mat()[j][(j+i)%3] for j in range(3)] for i in range(3)]
-        return sum([mul_list(i) for i in diago_down]) - sum([mul_list(i) for i in diago_up])
+        return  sum([mul_list(i) for i in diago_up]) - sum([mul_list(i) for i in diago_down])
 
     else:
         raise ValueError('Matrice too big')
@@ -68,10 +70,10 @@ class Matrice():
         '''Add two matrices (same order)'''
 
         if not isinstance(smat, Matrice):
-            raise ValueError('This method need a Matrice instance as parameter')
+            raise TypeError('This method need a Matrice instance as parameter')
 
         if self.n == smat.n and self.p == smat.p:
-            return Matrice([[self.mat[i][j]+smat()[i][j] for j in range(smat.p)] for i in range(self.n)])
+            return Matrice([[Fraction(self.mat[i][j]+smat()[i][j]).limit_denominator() for j in range(smat.p)] for i in range(self.n)])
         else:
             raise ValueError('This two matrices does not have the same order')
 
@@ -84,15 +86,24 @@ class Matrice():
         '''Muliply matrices with coefficient or other matrices'''
         if isinstance(val,Matrice):
             return self.mul(val)
-        elif type(val) == int:
+        elif type(val) == float or int:
             return self.coef(val)
         else:
-            raise ValueError('Wrong Parameter')
+            raise TypeError('Wrong Parameter')
 
     def __pow__(self, val):
         '''Matrices power and inverse (squared)'''
         if val == -1:
-            pass
+            d = det(self)
+            if d != 0 and self.is_squared():
+                if self.n == 1:
+                    return Matrice([1/self()[0]])
+                elif self.n == 2:
+                    return Matrice([[self()[1-i][1-j] if i==j else -self()[i][j] for j in range(2)] for i in range(2)])*(1/d)
+                else:
+                    raise ValueError('Matrice too big')
+            else:
+                raise ValueError('Matrice non-inversible')
         elif val >= 0:
             
             out = Matrice([[1 if i==j else 0 for j in range(self.p)] for i in range(self.n)])
@@ -106,7 +117,7 @@ class Matrice():
     def coef(self, coef : int) -> Matrice_:
         '''Apply coefficient to a matrice'''
 
-        return Matrice([[j*coef for j in i] for i in self.mat])
+        return Matrice([[Fraction(j*coef).limit_denominator() for j in i] for i in self.mat])
 
     def mul(self, smat : Matrice_) -> Matrice_:
         '''Muliply tow matrices (same row/column)'''
@@ -119,7 +130,7 @@ class Matrice():
     def single_mul(self, mata : list, matb : list) -> list:
         '''Add product of each index of the two list'''
 
-        return sum([mata[i]*matb[i] for i in range(len(mata))])
+        return sum([Fraction(mata[i]*matb[i]).limit_denominator() for i in range(len(mata))])
 
     def get_width(self) -> int:
         '''Return the width of the matrice'''
@@ -146,5 +157,5 @@ class Matrice():
 
         return [i[index] for i in self.mat]
 
-    def is_squared(self):
+    def is_squared(self) -> bool:
         return self.n == self.p
