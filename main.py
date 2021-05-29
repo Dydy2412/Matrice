@@ -6,9 +6,8 @@ MatA = Matrice([
 ])
 
 MatB = Matrice([
-    [ 1, 2, 3],
-    [ 1, 0, 2],
-    [ 2,-1, 1]
+    [ 1, 2],
+    [ 1, 0]
 ])
 
 MatC = Matrice([
@@ -17,5 +16,5 @@ MatC = Matrice([
     [ 2, 0,-3]
 ])
 
-MatD = MatA**(3)
+MatD = MatA/3
 print(MatD)

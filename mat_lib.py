@@ -114,6 +114,14 @@ class Matrice():
         else:
             raise ValueError('Negative power > -1 not allowed')
 
+    def __truediv__(self, val):
+        if isinstance(val, Matrice):
+            return self*val**(-1)
+        elif type(val) == int or float:
+            return self*(1/val)
+        else:
+            raise TypeError('Wrong Parameter')
+
     def coef(self, coef : int) -> Matrice_:
         '''Apply coefficient to a matrice'''
 
