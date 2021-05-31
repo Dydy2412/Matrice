@@ -17,13 +17,12 @@ def det(mat : Matrice_) -> int:
     elif mat.get_width() == 2:
         return mat()[0][0]*mat()[1][1] - mat()[0][1]*mat()[1][0]
 
-    elif mat.get_width() == 3:
-        diago_down = [[mat()[order-1-j][(j+i)%3] for j in range(3)] for i in range(3)]
-        diago_up = [[mat()[j][(j+i)%3] for j in range(3)] for i in range(3)]
-        return  sum([prod(i) for i in diago_up]) - sum([prod(i) for i in diago_down])
+    elif mat.get_width() >= 3:
+        row = mat.get_row(0)
+        det_coef = [-row[i] if (i+1)%2==0 else row[i] for i in range(len(row))]
+        det_mat = [Matrice([[mat()[k][l] for l in range(mat.p) if l!=j] for k in range(1,mat.n)]) for j in range(mat.p)]
 
-    else:
-        raise ValueError('Matrice too big')
+        return sum([det_coef[j]*det(det_mat[j]) for j in range(len(det_coef))])
 
 class Matrice():
     '''Matrice class for matrice operation'''
